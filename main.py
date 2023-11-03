@@ -24,6 +24,7 @@ class MainWindow(QMainWindow):
         file_menu_item.addAction(add_student_action)
 
         about_action = QAction('About', self)
+        about_action.triggered.connect(self.about)
         help_menu_item.addAction(about_action)
 
         search_action = QAction(QIcon('icons/search.png'), 'Search', self)
@@ -68,7 +69,6 @@ class MainWindow(QMainWindow):
         self.statusbar.addWidget(edit_button)
         self.statusbar.addWidget(delete_button)
 
-
     def load_data(self):
         # Loading the sql database
         connection = sqlite3.connect('database.db')
@@ -98,6 +98,23 @@ class MainWindow(QMainWindow):
     def delete(self):
         dialog = DeleteDialog()
         dialog.exec()
+
+    def about(self):
+        dialog = AboutDialog()
+        dialog.exec()
+
+class AboutDialog(QMessageBox):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('About')
+
+        content = '''
+        This is a Student Management App designed to provide information of the 
+        Students in different courses and their contact details. 
+        
+        '''
+        self.setText(content)
+
 
 class EditDialog(QDialog):
     def __init__(self):
