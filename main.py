@@ -64,13 +64,9 @@ class MainWindow(QMainWindow):
             for child in children:
                 self.statusbar.removeWidget(child)
 
-
         # Adding status button to status bar
         self.statusbar.addWidget(edit_button)
         self.statusbar.addWidget(delete_button)
-
-
-
 
 
     def load_data(self):
@@ -161,7 +157,46 @@ class EditDialog(QDialog):
         main_window.load_data()
 
 class DeleteDialog(QDialog):
-    pass
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Delete Student Data')
+
+        layout = QGridLayout()
+
+        confirmation = QLabel('Do you want to delete the data.')
+        yes = QPushButton('Yes')
+        no = QPushButton('No')
+
+        # Add widgets to layout
+        layout.addWidget(confirmation, 0, 0, 1, 2)
+        layout.addWidget(yes, 1, 0)
+        layout.addWidget(no, 1, 1)
+        self.setLayout(layout)
+
+        yes.clicked.connect(self.delete_student)
+
+    def delete_student(self):
+        # outputs a index of the selected row in main window table
+        index = main_window.table.currentRow()
+        # Student id at that index
+        student_id = main_window.table.item(index, 0).text()
+
+        connection = sqlite3.connect('database.db')
+        cursor = connection.cursor()
+        cursor.execute('DELETE FROM students WHERE id = ?', (student_id,))
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        # Refresh the main window
+        main_window.load_data()
+        # Closes the current window
+        self.close()
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Delete Window")
+        msg.setText("The Record is deleted successfully. ")
+        msg.exec()
 
 class SearchDialog(QDialog):
     def __init__(self):
